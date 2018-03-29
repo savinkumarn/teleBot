@@ -1,4 +1,3 @@
-
 import requests
 import cryptoClass
 
@@ -39,17 +38,15 @@ class telegramClass():
         req_list = req.split(",")
         respMessage = ''
         for i in req_list:
+            if str(i) == "":
+                continue
             respCrypt = cryp.get_coin_data_from_api(str(i).strip().upper())
             respMessage = respMessage + ' ' + respCrypt.strip() + '\n'
         return respMessage
 
 
-    def check_updates(self):
+    def get_coin_data(self):
         cryp = cryptoClass.cryptoClass("", {})
-        while True:
-            if self.get_updates_json(url) is not None:
-                self.update_id = self.last_update(self.get_updates_json(url))['update_id']
-                break
         cryp.get_response_from_api()
         while True:
             update = self.last_update(self.get_updates_json(url))
@@ -58,4 +55,14 @@ class telegramClass():
                     respMessage=self.get_message_to_send(update['message']['text'][4:], cryp)
                     self.send_mess(self.get_chat_id(), respMessage)
                 self.update_id += 1
+
+
+    def check_updates(self):
+
+        while True:
+            if self.get_updates_json(url) is not None:
+                self.update_id = self.last_update(self.get_updates_json(url))['update_id']
+                break
+
+        self.get_coin_data()
 
