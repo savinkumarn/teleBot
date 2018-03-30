@@ -1,8 +1,26 @@
 import requests
 import cryptoClass
+import customExceptions as CE
 
 url = "https://api.telegram.org/bot556048452:AAFTauwIsB2USv8mC1skMkFhkaJv4M5yoVc/"
+cryp = cryptoClass.cryptoClass()
+hand_horns = u'\U0001F918'
 
+def help_menu(junk):
+    resp = 'Welcome to help menu\n' \
+           'use /lc to get coin stats\n' \
+           'ex /lc BTC,eth,Sub\n' \
+           'use /cv to use conversion\n' \
+           'ex /cv 4 btc eth\n' \
+           'ex /cv 3 eth usd\n' \
+           'Enjoy Bitches!!!'+hand_horns
+    return resp
+
+master_func = {
+    "/lc": cryp.get_message_to_send,
+    "/cv": cryp.convert_coin_to_othercurrency,
+    "/hp": help_menu
+}
 
 class telegramClass():
     '''
@@ -12,7 +30,7 @@ class telegramClass():
         '''
         Constructor
         '''
-        update_id=0
+        self.update_id=0
 
     def get_updates_json(self,request):
         params = {'timeout': 100, 'offset': None}
@@ -29,40 +47,33 @@ class telegramClass():
         chat_id = update['message']['chat']['id']
         return chat_id
 
-    def send_mess(self, chat, text):
-        params = {'chat_id': chat, 'text': text}
+    def send_mess(self, text):
+        params = {'chat_id': self.get_chat_id(), 'text': text}
         response = requests.post(url + 'sendMessage', data=params)
         return response
 
-    def get_message_to_send(self, req, cryp):
-        req_list = req.split(",")
-        respMessage = ''
-        for i in req_list:
-            if str(i) == "":
-                continue
-            respCrypt = cryp.get_coin_data_from_api(str(i).strip().upper())
-            respMessage = respMessage + ' ' + respCrypt.strip() + '\n'
-        return respMessage
+    def get_data(self):
 
-
-    def get_coin_data(self):
-        cryp = cryptoClass.cryptoClass("", {})
-        cryp.get_response_from_api()
         while True:
             update = self.last_update(self.get_updates_json(url))
             if self.update_id == update['update_id']:
-                if update['message']['text'][:3] == "/lc":
-                    respMessage=self.get_message_to_send(update['message']['text'][4:], cryp)
-                    self.send_mess(self.get_chat_id(), respMessage)
+                try:
+                    respMessage = master_func[update['message']['text'][:3]](update['message']['text'])
+                except CE.finalException as FE:
+                    respMessage= FE.errorMessage
+                except KeyError:
+                    respMessage = "Use /hp for help you stupid fuck"
+                self.send_mess(respMessage)
                 self.update_id += 1
 
-
-    def check_updates(self):
-
+    def initialize_app(self):
         while True:
             if self.get_updates_json(url) is not None:
                 self.update_id = self.last_update(self.get_updates_json(url))['update_id']
                 break
+        cryp.get_response_from_api()
 
-        self.get_coin_data()
+    def check_updates(self):
+        self.initialize_app()
+        self.get_data()
 
