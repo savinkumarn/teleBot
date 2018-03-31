@@ -7,6 +7,9 @@ import customExceptions as CE
 smileface = u'\U0001F601'
 sadface = u'\U0001F641'
 neutralface = u'\U0001F928'
+first_element = '0'
+second_element = '1'
+third_element = '2'
 
 url = "https://api.coinmarketcap.com/v1/ticker/"
 convertINR = "/?convert=INR&limit=200"
@@ -18,31 +21,34 @@ currency_list = ["AUD", "BRL", "CAD", "CHF", "CLP", "CNY", "CZK",
                "SGD", "THB", "TRY", "TWD", "ZAR", "USD"]
 
 class cryptoClass():
-    '''
-    This class is used to create a report class
-    '''
+    """
+    This class is used to create a Crupto class
+    """
     def __init__(self):
+        """
+        Class Initialization
+        """
         self.response = ''
         self.master_data = {}
         self.convert_response=''
 
     def validate_data(self,inputList):
         if len(inputList) < 3:
-            raise CE.DataException('Not enough arguments, use /hp you fucking knob head')
+            raise CE.DataException('Not enough arguments , use /hp for help')
         elif len(inputList) > 3:
-            raise CE.DataException('What are you trying to do. use /hp before trying to fuck me')
+            raise CE.DataException('What are you trying to do ?, use /hp for help')
         else :
             try:
                 float(inputList[0])
                 self.master_data[str(inputList[1]).upper()]
                 self.master_data[str(inputList[2]).upper()]
             except ValueError:
-                raise CE.DataException('I take numbers as argument not ur mum')
+                raise CE.DataException('I take numbers as argument, use /hp for help')
             except KeyError:
                 if str(inputList[1]).upper() in currency_list or str(inputList[2]).upper() in currency_list:
                     return
                 else :
-                    raise CE.DataException('Conversion not possible with the shit coins you have given as input')
+                    raise CE.DataException('Conversion not possible ,use /hp for help')
 
     def prepare_master_data(self):
         for i in self.response:
@@ -59,15 +65,15 @@ class cryptoClass():
             self.master_data[i['symbol'].upper()] = inner_dict
 
     def format_convert_response(self, reqList):
-        if str(reqList[1]).upper() in currency_list:
-            priceVar = 'price_' + str(reqList[1]).lower()
-            totalConv = float(reqList[0]) / float(self.convert_response[0][priceVar])
+        if str(reqList[second_element]).upper() in currency_list:
+            priceVar = 'price_' + str(reqList[second_element]).lower()
+            totalConv = float(reqList[first_element]) / float(self.convert_response[first_element][priceVar])
         else:
-            priceVar = 'price_' + str(reqList[2]).lower()
-            totalConv = float(self.convert_response[0][priceVar]) * float(reqList[0])
+            priceVar = 'price_' + str(reqList[third_element]).lower()
+            totalConv = float(self.convert_response[first_element][priceVar]) * float(reqList[first_element])
 
-        return reqList[0] + ' ' + str(reqList[1]).upper() + ' = ' \
-               + str('{:.5f}'.format(totalConv)) + ' ' + str(reqList[2]).upper()
+        return reqList[first_element] + ' ' + str(reqList[second_element]).upper() + ' = ' \
+               + str('{:.5f}'.format(totalConv)) + ' ' + str(reqList[third_element]).upper()
 
     def frame_url(self, reqList):
         if str(reqList[2]).upper() in currency_list:

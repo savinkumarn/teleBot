@@ -7,37 +7,39 @@ cryp = cryptoClass.cryptoClass()
 hand_horns = u'\U0001F918'
 
 def help_menu(junk):
-    resp = 'Welcome to help menu\n' \
-           'use /lc to get coin stats\n' \
-           'ex /lc BTC,eth,Sub\n' \
-           'use /cv to use conversion\n' \
-           'ex /cv 4 btc eth\n' \
+    resp = 'Welcome to HELP Menu\n\n' \
+           'use /cp to get coin stats\n' \
+           'ex /cp BTC,eth,Sub\n\n' \
+           'use /cv to use currency conversion\n' \
+           '/cv [amount] [currency] [currency]\n' \
            'ex /cv 3 eth usd\n' \
-           'Enjoy Bitches!!!'+hand_horns
+           'ex /cv 5 btc VEN\n\n' \
+           'Enjoy Bitches!!!' + hand_horns + \
+           '\n\n PM @savin54'
     return resp
 
 master_func = {
-    "/lc": cryp.get_message_to_send,
+    "/cp": cryp.get_message_to_send,
     "/cv": cryp.convert_coin_to_othercurrency,
     "/hp": help_menu
 }
 
 class telegramClass():
-    '''
-    This class is used to create a report class
-    '''
+    """
+    This class is used to create a Telegram class
+    """
     def __init__(self):
-        '''
+        """
         Constructor
-        '''
+        """
         self.update_id=0
 
-    def get_updates_json(self,request):
+    def get_updates_json(self, request):
         params = {'timeout': 100, 'offset': None}
         response = requests.get(request + 'getUpdates', data=params)
         return response.json()
 
-    def last_update(self,data):
+    def last_update(self, data):
         results = data['result']
         total_updates = len(results) - 1
         return results[total_updates]
@@ -58,12 +60,12 @@ class telegramClass():
             update = self.last_update(self.get_updates_json(url))
             if self.update_id == update['update_id']:
                 try:
-                    respMessage = master_func[update['message']['text'][:3]](update['message']['text'])
+                    resp_message = master_func[update['message']['text'][:3]](update['message']['text'])
                 except CE.finalException as FE:
-                    respMessage= FE.errorMessage
+                    resp_message = FE.errorMessage
                 except KeyError:
-                    respMessage = "Use /hp for help you stupid fuck"
-                self.send_mess(respMessage)
+                    resp_message = "Use /hp for help"
+                self.send_mess(resp_message)
                 self.update_id += 1
 
     def initialize_app(self):
