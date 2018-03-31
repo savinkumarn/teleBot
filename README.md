@@ -1,14 +1,16 @@
 # teleBot
-This is pilot project to understand the capabilities of telegram bot
+This is a telegram bot used to multiple fucntionalities.
 
-Getting Started
-NA
+Currently Available : 
+1. Crypto Currency stats and conversion
 
 Prerequisites
 Python 3+
+pip 
+requests
 
 Deployment
-Yet to be deployed 
+Heroku Server as worker.
 
 Authors
 Savin Kumar N
