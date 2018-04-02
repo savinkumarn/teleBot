@@ -7,9 +7,9 @@ import customExceptions as CE
 smileface = u'\U0001F601'
 sadface = u'\U0001F641'
 neutralface = u'\U0001F928'
-first_element = '0'
-second_element = '1'
-third_element = '2'
+first_element = 0
+second_element = 1
+third_element = 2
 
 url = "https://api.coinmarketcap.com/v1/ticker/"
 convertINR = "/?convert=INR&limit=200"
