@@ -30,18 +30,18 @@ class cryptoClass():
         """
         self.response = ''
         self.master_data = {}
-        self.convert_response=''
+        self.convert_response = ''
 
-    def validate_data(self,inputList):
+    def validate_data(self, inputList):
         if len(inputList) < 3:
             raise CE.DataException('Not enough arguments , use /hp for help')
         elif len(inputList) > 3:
             raise CE.DataException('What are you trying to do ?, use /hp for help')
         else :
             try:
-                float(inputList[0])
-                self.master_data[str(inputList[1]).upper()]
-                self.master_data[str(inputList[2]).upper()]
+                float(inputList[first_element])
+                self.master_data[str(inputList[second_element]).upper()]
+                self.master_data[str(inputList[third_element]).upper()]
             except ValueError:
                 raise CE.DataException('I take numbers as first argument, use /hp for help')
             except KeyError:
@@ -52,16 +52,13 @@ class cryptoClass():
 
     def prepare_master_data(self):
         for i in self.response:
-            inner_dict = {}
-            inner_dict['id'] = i['id']
-            inner_dict['symbol'] = i['symbol']
-            inner_dict['price_usd'] = i['price_usd']
-            inner_dict['price_inr'] = str('{:.2f}'.format(float(i['price_inr'])))
-            inner_dict['percent_change_1h'] = i['percent_change_1h']
-            resp = i['symbol'] + ' $' + i['price_usd'] + ' INR ' + \
+            resp = i['symbol'] + ' $' + str('{:.2f}'.format(float(i['price_usd']))) + ' INR' + \
                    str('{:.2f}'.format(float(i['price_inr']))) + ' ' + i['percent_change_1h'] \
                    + '% ' + (smileface if float(i['percent_change_1h']) > 0 else sadface)
-            inner_dict['response'] = resp
+            inner_dict = {
+                'id': i['id'],
+                'response': resp
+            }
             self.master_data[i['symbol'].upper()] = inner_dict
 
     def format_convert_response(self, reqList):
@@ -76,15 +73,15 @@ class cryptoClass():
                + str('{:.5f}'.format(totalConv)) + ' ' + str(reqList[third_element]).upper()
 
     def frame_url(self, reqList):
-        if str(reqList[2]).upper() in currency_list:
-            l_url = url + self.master_data[str(reqList[1]).upper()]['id'] + convert \
+        if str(reqList[third_element]).upper() in currency_list:
+            l_url = url + self.master_data[str(reqList[second_element]).upper()]['id'] + convert \
                     + str(reqList[2]).upper()
-        elif str(reqList[1]).upper() in currency_list:
-            l_url = url + self.master_data[str(reqList[2]).upper()]['id'] + convert \
+        elif str(reqList[second_element]).upper() in currency_list:
+            l_url = url + self.master_data[str(reqList[third_element]).upper()]['id'] + convert \
                     + str(reqList[1]).upper()
-        else :
-            l_url = url + self.master_data[str(reqList[1]).upper()]['id'] + convert \
-               + self.master_data[str(reqList[2]).upper()]["symbol"]
+        else:
+            l_url = url + self.master_data[str(reqList[second_element]).upper()]['id'] + convert \
+               + self.master_data[str(reqList[third_element]).upper()]["symbol"]
         return l_url
 
     def convert_coin_to_othercurrency(self, req):
