@@ -43,7 +43,7 @@ class cryptoClass():
                 self.master_data[str(inputList[1]).upper()]
                 self.master_data[str(inputList[2]).upper()]
             except ValueError:
-                raise CE.DataException('I take numbers as argument, use /hp for help')
+                raise CE.DataException('I take numbers as first argument, use /hp for help')
             except KeyError:
                 if str(inputList[1]).upper() in currency_list or str(inputList[2]).upper() in currency_list:
                     return

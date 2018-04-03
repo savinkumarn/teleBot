@@ -5,6 +5,7 @@ import customExceptions as CE
 url = "https://api.telegram.org/bot556048452:AAFTauwIsB2USv8mC1skMkFhkaJv4M5yoVc/"
 cryp = cryptoClass.cryptoClass()
 hand_horns = u'\U0001F918'
+emptychar = ""
 
 def help_menu(junk):
     resp = 'Welcome to HELP Menu\n\n' \
@@ -32,21 +33,24 @@ class telegramClass():
         """
         Constructor
         """
-        self.update_id=0
+        self.update_id = 0
+        self.tResponse = ''
 
     def get_updates_json(self, request):
         params = {'timeout': 100, 'offset': None}
         response = requests.get(request + 'getUpdates', data=params)
-        return response.json()
+        return response.json() if response is not None else emptychar
 
-    def last_update(self, data):
-        results = data['result']
-        total_updates = len(results) - 1
-        return results[total_updates]
+    def update_resp(self):
+        try:
+            data = self.get_updates_json(url)['result']
+            total_updates = len(data) - 1
+            self.tResponse = data[total_updates]
+        except:
+            self.check_updates()
 
     def get_chat_id(self):
-        update=self.last_update(self.get_updates_json(url))
-        chat_id = update['message']['chat']['id']
+        chat_id = self.tResponse['message']['chat']['id']
         return chat_id
 
     def send_mess(self, text):
@@ -55,12 +59,11 @@ class telegramClass():
         return response
 
     def get_data(self):
-
         while True:
-            update = self.last_update(self.get_updates_json(url))
-            if self.update_id == update['update_id']:
+            self.update_resp()
+            if self.update_id == self.tResponse['update_id']:
                 try:
-                    resp_message = master_func[update['message']['text'][:3]](update['message']['text'])
+                    resp_message = master_func[self.tResponse['message']['text'][:3]](self.tResponse['message']['text'])
                 except CE.finalException as FE:
                     resp_message = FE.errorMessage
                 except KeyError:
@@ -71,7 +74,8 @@ class telegramClass():
     def initialize_app(self):
         while True:
             if self.get_updates_json(url) is not None:
-                self.update_id = self.last_update(self.get_updates_json(url))['update_id']
+                self.update_resp()
+                self.update_id = self.tResponse['update_id']
                 break
         cryp.get_response_from_api()
 
