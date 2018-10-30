@@ -7,7 +7,8 @@ cryp = cryptoClass.cryptoClass()
 hand_horns = u'\U0001F918'
 emptychar = ""
 
-def help_menu(junk):
+
+def help_menu():
     resp = 'Welcome to HELP Menu\n\n' \
            'use /cp to get coin stats\n' \
            'ex /cp BTC,eth,Sub\n\n' \
@@ -19,11 +20,13 @@ def help_menu(junk):
            '\n\n PM @savin54'
     return resp
 
+
 master_func = {
     "/cp": cryp.get_message_to_send,
     "/cv": cryp.convert_coin_to_othercurrency,
     "/hp": help_menu
 }
+
 
 class telegramClass():
     """

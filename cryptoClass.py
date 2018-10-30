@@ -20,6 +20,7 @@ currency_list = ["AUD", "BRL", "CAD", "CHF", "CLP", "CNY", "CZK",
                "KRW", "MXN", "MYR", "NOK", "NZD", "PHP", "PKR", "PLN", "RUB", "SEK",
                "SGD", "THB", "TRY", "TWD", "ZAR", "USD"]
 
+
 class cryptoClass():
     """
     This class is used to create a Crupto class
